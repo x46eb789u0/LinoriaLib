@@ -13,6 +13,11 @@ local Mouse = LocalPlayer:GetMouse();
 local DrawingLib = typeof(Drawing) == "table" and Drawing or { drawing_replaced = true };
 local ProtectGui = protectgui or (function() end);
 local GetHUI = gethui or (function() return CoreGui end);
+local assert = function(condition, errorMessage) 
+    if (not condition) then
+        error(if errorMessage then errorMessage else "assert failed", 3)
+    end
+end
 
 local IsBadDrawingLib = false;
 
@@ -833,7 +838,7 @@ do
         local ToggleLabel = self.TextLabel;
         --local Container = self.Container;
 
-        assert(Info.Default, 'AddColorPicker: Missing default value.');
+        assert(Info.Default, string.format('AddColorPicker (IDX: %s): Missing default value.', tostring(Idx)));
 
         local ColorPicker = {
             Value = Info.Default;
@@ -1442,7 +1447,7 @@ do
         local ToggleLabel = self.TextLabel;
         --local Container = self.Container;
 
-        assert(Info.Default, 'AddKeyPicker: Missing default value.');
+        assert(Info.Default, string.format('AddKeyPicker (IDX: %s): Missing default value.', tostring(Idx)));
 
         local KeyPicker = {
             Value = Info.Default;
@@ -1906,8 +1911,8 @@ do
             Info.AllowNull = true;
         end;
 
-        assert(Info.Values, 'AddDropdown: Missing dropdown value list.');
-        assert(Info.AllowNull or Info.Default, 'AddDropdown: Missing default value. Pass `AllowNull` as true if this was intentional.')
+        assert(Info.Values, string.format('AddDropdown (IDX: %s): Missing dropdown value list.', tostring(Idx)));
+        assert(Info.AllowNull or Info.Default, string.format('AddDropdown (IDX: %s): Missing default value. Pass `AllowNull` as true if this was intentional.', tostring(Idx)))
 
         Info.Searchable = if typeof(Info.Searchable) == "boolean" then Info.Searchable else false;
         Info.FormatDisplayValue = if typeof(Info.FormatDisplayValue) == "function" then Info.FormatDisplayValue else nil;
@@ -2930,7 +2935,7 @@ do
     end
 
     function BaseGroupboxFuncs:AddInput(Idx, Info)
-        assert(Info.Text, 'AddInput: Missing `Text` string.')
+        assert(Info.Text, string.format('AddInput (IDX: %s): Missing `Text` string.', tostring(Idx)));
 
         Info.ClearTextOnFocus = if typeof(Info.ClearTextOnFocus) == "boolean" then Info.ClearTextOnFocus else true;
 
@@ -3174,7 +3179,7 @@ do
     end;
 
     function BaseGroupboxFuncs:AddToggle(Idx, Info)
-        assert(Info.Text, 'AddInput: Missing `Text` string.')
+        assert(Info.Text, string.format('AddInput (IDX: %s): Missing `Text` string.', tostring(Idx)));
 
         local Toggle = {
             Value = Info.Default or false;
@@ -3394,11 +3399,11 @@ do
     end;
 
     function BaseGroupboxFuncs:AddSlider(Idx, Info)
-        assert(Info.Default, 'AddSlider: Missing default value.');
-        assert(Info.Text, 'AddSlider: Missing slider text.');
-        assert(Info.Min, 'AddSlider: Missing minimum value.');
-        assert(Info.Max, 'AddSlider: Missing maximum value.');
-        assert(Info.Rounding, 'AddSlider: Missing rounding value.');
+        assert(Info.Default,    string.format('AddSlider (IDX: %s): Missing default value.', tostring(Idx)));
+        assert(Info.Text,       string.format('AddSlider (IDX: %s): Missing slider text.', tostring(Idx)));
+        assert(Info.Min,        string.format('AddSlider (IDX: %s): Missing minimum value.', tostring(Idx)));
+        assert(Info.Max,        string.format('AddSlider (IDX: %s): Missing maximum value.', tostring(Idx)));
+        assert(Info.Rounding,   string.format('AddSlider (IDX: %s): Missing rounding value.', tostring(Idx)));
 
         local Slider = {
             Value = Info.Default;
@@ -3742,8 +3747,8 @@ do
             Info.AllowNull = true;
         end;
 
-        assert(Info.Values, 'AddDropdown: Missing dropdown value list.');
-        assert(Info.AllowNull or Info.Default, 'AddDropdown: Missing default value. Pass `AllowNull` as true if this was intentional.')
+        assert(Info.Values, string.format('AddDropdown (IDX: %s): Missing dropdown value list.', tostring(Idx)));
+        assert(Info.AllowNull or Info.Default, string.format('AddDropdown (IDX: %s): Missing default value. Pass `AllowNull` as true if this was intentional.', tostring(Idx)));
 
         Info.Searchable = if typeof(Info.Searchable) == "boolean" then Info.Searchable else false;
         Info.FormatDisplayValue = if typeof(Info.FormatDisplayValue) == "function" then Info.FormatDisplayValue else nil;
