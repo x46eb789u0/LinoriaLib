@@ -1,3 +1,8 @@
+### 14.07.2025
+```diff
++ Added 'AddViewport' (thanks upio)
+```
+
 ### 22.6.2025
 ```diff
 + Added IDX to errors on element creations for easier DEBUG
