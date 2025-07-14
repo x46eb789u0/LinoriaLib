@@ -1,6 +1,6 @@
 ### 14.07.2025
 ```diff
-+ Added 'AddViewport' (thanks upio)
++ Added 'AddViewport' and 'AddImage' (thanks upio)
 ```
 
 ### 22.6.2025
