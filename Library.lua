@@ -3773,8 +3773,11 @@ do
         end;
 
         assert(Info.Values, string.format('AddDropdown (IDX: %s): Missing dropdown value list.', tostring(Idx)));
-        assert(Info.AllowNull or Info.Default, string.format('AddDropdown (IDX: %s): Missing default value. Pass `AllowNull` as true if this was intentional.', tostring(Idx)));
-
+        if not (Info.AllowNull or Info.Default) then
+            Info.Default = 1;
+            warn(string.format('AddDropdown (IDX: %s): Missing default value, selected the first index instead. Pass `AllowNull` as true if this was intentional.', tostring(Idx)))
+        end
+        
         Info.Searchable = if typeof(Info.Searchable) == "boolean" then Info.Searchable else false;
         Info.FormatDisplayValue = if typeof(Info.FormatDisplayValue) == "function" then Info.FormatDisplayValue else nil;
 
