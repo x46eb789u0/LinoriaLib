@@ -1,3 +1,8 @@
+### 04.08.2025
+```diff
++ Added 'Bottom' option to Tab:UpdateWarningBox
+```
+
 ### 14.07.2025
 ```diff
 + Added 'AddViewport' and 'AddImage' (thanks upio)

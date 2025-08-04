@@ -5529,6 +5529,7 @@ function Library:CreateWindow(...)
 
         local TopBarLabelStroke
         local TopBarHighlight
+        local IsTopBarBottom = false
         local TopBar, TopBarInner, TopBarLabel, TopBarTextLabel; do
             TopBar = Library:Create('Frame', {
                 BackgroundColor3 = Library.BackgroundColor;
@@ -5601,8 +5602,8 @@ function Library:CreateWindow(...)
         local LeftSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 1, -14);
+            Position = UDim2.new(0, 7, 0, 7);
+            Size = UDim2.new(0.5, -10, 1, -14);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -5614,8 +5615,8 @@ function Library:CreateWindow(...)
         local RightSide = Library:Create('ScrollingFrame', {
             BackgroundTransparency = 1;
             BorderSizePixel = 0;
-            Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-            Size = UDim2.new(0.5, -12 + 2, 1, -14);
+            Position = UDim2.new(0.5, 5, 0, 7);
+            Size = UDim2.new(0.5, -10, 1, -14);
             CanvasSize = UDim2.new(0, 0, 0, 0);
             BottomImage = '';
             TopImage = '';
@@ -5692,24 +5693,46 @@ function Library:CreateWindow(...)
                     end;
                 end;
                 
+                if IsTopBarBottom == true then
+                    TopBar.Position = UDim2.new(0, 7, 1, -(Size + 7));
+                else
+                    TopBar.Position = UDim2.new(0, 7, 0, 7);
+                end
+
                 TopBar.Size = UDim2.new(1, -13, 0, Size);
                 Size = Size + 10;
                 
-                LeftSide.Position = UDim2.new(0, 8 - 1, 0, 8 - 1 + Size);
-                LeftSide.Size = UDim2.new(0.5, -12 + 2, 1, -14 - Size);
-        
-                RightSide.Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1 + Size);
-                RightSide.Size = UDim2.new(0.5, -12 + 2, 1, -14 - Size);
+                if TopBar.Position.Y.Offset > 0 then
+                    LeftSide.Position = UDim2.new(0, 7, 0, 7 + Size);
+                    LeftSide.Size = UDim2.new(0.5, -10, 1, -14 - Size);
+            
+                    RightSide.Position = UDim2.new(0.5, 5, 0, 7 + Size);
+                    RightSide.Size = UDim2.new(0.5, -10, 1, -14 - Size);
+                else
+                    LeftSide.Position = UDim2.new(0, 7, 0, 7);
+                    LeftSide.Size = UDim2.new(0.5, -10, 1, -14 - Size);
+            
+                    RightSide.Position = UDim2.new(0.5, 5, 0, 7);
+                    RightSide.Size = UDim2.new(0.5, -10, 1, -14 - Size);
+                end
             else
-                LeftSide.Position = UDim2.new(0, 8 - 1, 0, 8 - 1);
-                LeftSide.Size = UDim2.new(0.5, -12 + 2, 1, -14);
+                LeftSide.Position = UDim2.new(0, 7, 0, 7);
+                LeftSide.Size = UDim2.new(0.5, -10, 1, -14);
         
-                RightSide.Position = UDim2.new(0.5, 4 + 1, 0, 8 - 1);
-                RightSide.Size = UDim2.new(0.5, -12 + 2, 1, -14);
+                RightSide.Position = UDim2.new(0.5, 5, 0, 7);
+                RightSide.Size = UDim2.new(0.5, -10, 1, -14);
             end;
         end;
 
         function Tab:UpdateWarningBox(Info)
+            if Info.Bottom == true then
+                IsTopBarBottom = true;
+                if TopBar.Visible then Tab:Resize(); end
+            else
+                IsTopBarBottom = false;
+                if TopBar.Visible then Tab:Resize(); end
+            end
+
             if typeof(Info.Visible) == "boolean" then
                 TopBar.Visible = Info.Visible;
                 Tab:Resize();
