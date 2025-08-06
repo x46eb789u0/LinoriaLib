@@ -1,3 +1,22 @@
+### 06.08.2025
+```diff
++ Added support for executors that do not support getgenv
++ Added support for MouseButton3 (middle mouse button)
+
++ Improved KeyPicker:
+    + Added unbinding functionality
+    + Added proper type checking for KeyPicker:SetValue
+    + Key Picker does not force auto save for every single change anymore (user needs to manually save the config now)
++ Dropdowns now resize to fit the longest item in the list
+
++ Fixed Key Mode menu having its Y position off by 1 pixel
++ Fixed Keybinds Menu having overflowing text
++ Fixed issue where Slider could display -0
++ Fixed sub-buttons not resizing correctly
++ Fixed alignment issues with Toggles that include Key Pickers, Color Pickers, and Dropdowns
++ Fixed loading issues in Roblox Studio
+```
+
 ### 04.08.2025
 ```diff
 + Added 'Bottom' option to Tab:UpdateWarningBox
