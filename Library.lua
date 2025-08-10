@@ -5697,6 +5697,7 @@ function Library:CreateWindow(...)
                 BackgroundTransparency = 1;
                 Font = Library.Font;
                 TextStrokeTransparency = 0;
+                RichText = true;
 
                 Size = UDim2.new(1, 0, 0, 18);
                 Position = UDim2.new(0, 4, 0, 2);
