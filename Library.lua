@@ -5937,6 +5937,7 @@ function Library:CreateWindow(...)
 
             Tab:Resize();
         end;
+        Tab.Show = Tab.ShowTab;
 
         function Tab:HideTab()
             Blocker.BackgroundTransparency = 1;
@@ -5944,6 +5945,7 @@ function Library:CreateWindow(...)
             Library.RegistryMap[TabButton].Properties.BackgroundColor3 = 'BackgroundColor';
             TabFrame.Visible = false;
         end;
+        Tab.Hide = Tab.HideTab;
 
         function Tab:SetLayoutOrder(Position)
             TabButton.LayoutOrder = Position;
