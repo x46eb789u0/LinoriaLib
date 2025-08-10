@@ -5663,7 +5663,7 @@ function Library:CreateWindow(...)
         local TopBarLabelStroke
         local TopBarHighlight
         local IsTopBarBottom = false
-        local LockBoxSize = true
+        local LockBoxSize = false
         local TopBar, TopBarInner, TopBarLabel, TopBarTextLabel, TopBarScrollingFrame; do
             TopBar = Library:Create('Frame', {
                 BackgroundColor3 = Library.BackgroundColor;
