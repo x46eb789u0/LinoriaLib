@@ -1,6 +1,7 @@
 ### 04.08.2025
 ```diff
 + Added 'LockSize' option to Tab:UpdateWarningBox
++ Added Tab:Show() and Tab:Hide() aliases
 ```
 
 ### 06.08.2025
