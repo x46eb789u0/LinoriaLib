@@ -1948,11 +1948,12 @@ do
                 InputService.InputBegan:Once(function(Input)
                     local Key;
 
-                    if Input.UserInputType == Enum.UserInputType.Keyboard then
-                        Key = Input.KeyCode.Name;
-                    elseif SpecialKeysInput[Input.UserInputType] ~= nil then
+                    if SpecialKeysInput[Input.UserInputType] ~= nil then
                         Key = SpecialKeysInput[Input.UserInputType];
-                    end;
+                        
+                    elseif Input.UserInputType == Enum.UserInputType.Keyboard then
+                        Key = Input.KeyCode == Enum.KeyCode.Escape and "None" or Input.KeyCode.Name
+                    end
 
                     Break = true;
                     Picking = false;
