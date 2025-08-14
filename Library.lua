@@ -5698,7 +5698,7 @@ function Library:CreateWindow(...)
             TopBarScrollingFrame = Library:Create('ScrollingFrame', {
                 BackgroundTransparency = 1;
                 BorderSizePixel = 0;
-                Size = UDim2.new(1, 0, 1, -9);
+                Size = UDim2.new(1, -8, 1, 0);
                 CanvasSize = UDim2.new(0, 0, 0, 0);
                 AutomaticCanvasSize = Enum.AutomaticSize.Y;
                 ScrollBarThickness = 3;
@@ -5728,7 +5728,7 @@ function Library:CreateWindow(...)
             TopBarTextLabel = Library:CreateLabel({
                 RichText = true;
                 Position = UDim2.new(0, 4, 0, 20);
-                Size = UDim2.new(1, -4, 0, 14);
+                Size = UDim2.new(1, 0, 0, 14);
                 TextSize = 14;
                 Text = "Text";
                 TextWrapped = true,
@@ -5828,19 +5828,8 @@ function Library:CreateWindow(...)
 
         function Tab:Resize()
             if TopBar.Visible == true then
-                local Size = 5;
                 local MaximumSize = math.floor(TabFrame.AbsoluteSize.Y / 3.25);
-
-                for _, Element in next, TopBarScrollingFrame:GetChildren() do
-                    if (not Element:IsA('UIListLayout')) and Element.Visible then
-                        if Element == TopBarTextLabel then
-                            Size = Size + Element.TextBounds.Y;    
-                            continue                     
-                        end;
-                        
-                        Size = Size + Element.Size.Y.Offset;
-                    end;
-                end;
+                local Size = 27 + select(2, Library:GetTextBounds(TopBarTextLabel.Text, Library.Font, 14, Vector2.new(TopBarTextLabel.AbsoluteSize.X, math.huge)));
 
                 if LockBoxSize == true and Size >= MaximumSize then Size = MaximumSize; end
 
@@ -5897,11 +5886,7 @@ function Library:CreateWindow(...)
 
             if typeof(Info.Text) == "string" then
                 TopBarTextLabel.Text = Info.Text;
-        
-                local Y = select(2, Library:GetTextBounds(Info.Text, Library.Font, 14, Vector2.new(TopBarTextLabel.AbsoluteSize.X, math.huge)));
-                TopBarTextLabel.Size = UDim2.new(1, -4, 0, Y);
-
-                Tab:Resize();
+                if TopBar.Visible then Tab:Resize(); end
             end;
 
             TopBar.BorderColor3 = Info.IsNormal == true and Color3.fromRGB(27, 42, 53) or Color3.fromRGB(248, 51, 51)

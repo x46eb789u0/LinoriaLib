@@ -1,5 +1,10 @@
 ### 04.08.2025
 ```diff
++ Fixed UpdateWarningBox resizing to invalid Y size
+```
+
+### 04.08.2025
+```diff
 + Added 'LockSize' option to Tab:UpdateWarningBox
 + Added Tab:Show() and Tab:Hide() aliases
 ```
