@@ -25,7 +25,11 @@ local DrawingLib = typeof(Drawing) == "table" and Drawing or { drawing_replaced 
 local IsBadDrawingLib = false;
 
 local function SafeParentUI(Instance: Instance, Parent: Instance | () -> Instance)
-    if not pcall(function()
+    local success, _error = pcall(function()
+        if not Parent then
+            Parent = CoreGui
+        end
+
         local DestinationParent
         if typeof(Parent) == "function" then
             DestinationParent = Parent()
@@ -34,7 +38,9 @@ local function SafeParentUI(Instance: Instance, Parent: Instance | () -> Instanc
         end
 
         Instance.Parent = DestinationParent
-    end) then
+    end)
+
+    if not (success and Instance.Parent) then
         Instance.Parent = LocalPlayer:WaitForChild("PlayerGui", math.huge)
     end
 end
