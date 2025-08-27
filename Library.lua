@@ -5616,8 +5616,16 @@ function Library:CreateWindow(...)
         local Tab = {
             Groupboxes = {};
             Tabboxes = {};
-
-            OriginalName = Name; Name = Name;
+            WarningBox = {
+                Bottom = false,
+                IsNormal = false,
+                LockSize = false,
+                Visible = false,
+                Title = "WARNING",
+                Text = ""
+            };
+            OriginalName = Name; 
+            Name = Name;
         };
 
         local TabButtonWidth = Library:GetTextBounds(Tab.Name, Library.Font, 16);
@@ -5669,8 +5677,6 @@ function Library:CreateWindow(...)
 
         local TopBarLabelStroke
         local TopBarHighlight
-        local IsTopBarBottom = false
-        local LockBoxSize = false
         local TopBar, TopBarInner, TopBarLabel, TopBarTextLabel, TopBarScrollingFrame; do
             TopBar = Library:Create('Frame', {
                 BackgroundColor3 = Library.BackgroundColor;
@@ -5837,9 +5843,11 @@ function Library:CreateWindow(...)
                 local MaximumSize = math.floor(TabFrame.AbsoluteSize.Y / 3.25);
                 local Size = 27 + select(2, Library:GetTextBounds(TopBarTextLabel.Text, Library.Font, 14, Vector2.new(TopBarTextLabel.AbsoluteSize.X, math.huge)));
 
-                if LockBoxSize == true and Size >= MaximumSize then Size = MaximumSize; end
+                if Tab.WarningBox.LockSize == true and Size >= MaximumSize then 
+                    Size = MaximumSize; 
+                end
 
-                if IsTopBarBottom == true then
+                if Tab.WarningBox.Bottom == true then
                     TopBar.Position = UDim2.new(0, 7, 1, -(Size + 7));
                 else
                     TopBar.Position = UDim2.new(0, 7, 0, 7);
@@ -5871,49 +5879,37 @@ function Library:CreateWindow(...)
         end;
 
         function Tab:UpdateWarningBox(Info)
-            if typeof(Info.Bottom) == "boolean" then
-                IsTopBarBottom = Info.Bottom;
-                if TopBar.Visible then Tab:Resize(); end
-            end
+            if typeof(Info.Bottom) == "boolean"     then Tab.WarningBox.Bottom      = Info.Bottom end
+            if typeof(Info.IsNormal) == "boolean"   then Tab.WarningBox.IsNormal      = Info.IsNormal end
+            if typeof(Info.LockSize) == "boolean"   then Tab.WarningBox.LockSize    = Info.LockSize end
+            if typeof(Info.Visible) == "boolean"    then Tab.WarningBox.Visible     = Info.Visible end
+            if typeof(Info.Title) == "string"       then Tab.WarningBox.Title       = Info.Title end
+            if typeof(Info.Text) == "string"        then Tab.WarningBox.Text        = Info.Text end
 
-            if typeof(Info.LockSize) == "boolean" then
-                LockBoxSize = Info.LockSize;
-                if TopBar.Visible then Tab:Resize(); end
-            end
+            TopBar.Visible = Tab.WarningBox.Visible;
+            TopBarLabel.Text = Tab.WarningBox.Title;
+            TopBarTextLabel.Text = Tab.WarningBox.Text;
+            if TopBar.Visible then Tab:Resize(); end
 
-            if typeof(Info.Visible) == "boolean" then
-                TopBar.Visible = Info.Visible;
-                Tab:Resize();
-            end;
-
-            if typeof(Info.Title) == "string" then
-                TopBarLabel.Text = Info.Title;
-            end;
-
-            if typeof(Info.Text) == "string" then
-                TopBarTextLabel.Text = Info.Text;
-                if TopBar.Visible then Tab:Resize(); end
-            end;
-
-            TopBar.BorderColor3 = Info.IsNormal == true and Color3.fromRGB(27, 42, 53) or Color3.fromRGB(248, 51, 51)
-            TopBarInner.BorderColor3 = Info.IsNormal == true and Library.OutlineColor or Color3.fromRGB(0, 0, 0)
-            TopBarInner.BackgroundColor3 = Info.IsNormal == true and Library.BackgroundColor or Color3.fromRGB(117, 22, 17)
-            TopBarHighlight.BackgroundColor3 = Info.IsNormal == true and Library.AccentColor or Color3.fromRGB(255, 75, 75)
+            TopBar.BorderColor3 = Tab.WarningBox.IsNormal == true and Color3.fromRGB(27, 42, 53) or Color3.fromRGB(248, 51, 51)
+            TopBarInner.BorderColor3 = Tab.WarningBox.IsNormal == true and Library.OutlineColor or Color3.fromRGB(0, 0, 0)
+            TopBarInner.BackgroundColor3 = Tab.WarningBox.IsNormal == true and Library.BackgroundColor or Color3.fromRGB(117, 22, 17)
+            TopBarHighlight.BackgroundColor3 = Tab.WarningBox.IsNormal == true and Library.AccentColor or Color3.fromRGB(255, 75, 75)
              
-            TopBarLabel.TextColor3 = Info.IsNormal == true and Library.FontColor or Color3.fromRGB(255, 55, 55)
-            TopBarLabelStroke.Color = Info.IsNormal == true and Library.Black or Color3.fromRGB(174, 3, 3)
+            TopBarLabel.TextColor3 = Tab.WarningBox.IsNormal == true and Library.FontColor or Color3.fromRGB(255, 55, 55)
+            TopBarLabelStroke.Color = Tab.WarningBox.IsNormal == true and Library.Black or Color3.fromRGB(174, 3, 3)
 
             if not Library.RegistryMap[TopBarInner] then Library:AddToRegistry(TopBarInner, {}) end
             if not Library.RegistryMap[TopBarHighlight] then Library:AddToRegistry(TopBarHighlight, {}) end
             if not Library.RegistryMap[TopBarLabel] then Library:AddToRegistry(TopBarLabel, {}) end
             if not Library.RegistryMap[TopBarLabelStroke] then Library:AddToRegistry(TopBarLabelStroke, {}) end
 
-            Library.RegistryMap[TopBarInner].Properties.BorderColor3 = Info.IsNormal == true and "OutlineColor" or nil;
-            Library.RegistryMap[TopBarInner].Properties.BackgroundColor3 = Info.IsNormal == true and "BackgroundColor" or nil;
-            Library.RegistryMap[TopBarHighlight].Properties.BackgroundColor3 = Info.IsNormal == true and "AccentColor" or nil;
+            Library.RegistryMap[TopBarInner].Properties.BorderColor3 = Tab.WarningBox.IsNormal == true and "OutlineColor" or nil;
+            Library.RegistryMap[TopBarInner].Properties.BackgroundColor3 = Tab.WarningBox.IsNormal == true and "BackgroundColor" or nil;
+            Library.RegistryMap[TopBarHighlight].Properties.BackgroundColor3 = Tab.WarningBox.IsNormal == true and "AccentColor" or nil;
 
-            Library.RegistryMap[TopBarLabel].Properties.TextColor3 = Info.IsNormal == true and "FontColor" or nil;
-            Library.RegistryMap[TopBarLabelStroke].Properties.Color = Info.IsNormal == true and "Black" or nil;
+            Library.RegistryMap[TopBarLabel].Properties.TextColor3 = Tab.WarningBox.IsNormal == true and "FontColor" or nil;
+            Library.RegistryMap[TopBarLabelStroke].Properties.Color = Tab.WarningBox.IsNormal == true and "Black" or nil;
         end;
 
         function Tab:ShowTab()
