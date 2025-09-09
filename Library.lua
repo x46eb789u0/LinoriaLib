@@ -3700,17 +3700,26 @@ do
         end;
         
         function Slider:Display()
-            local FormattedValue = (Slider.Value == 0 or Slider.Value == -0) and "0" or tostring(Slider.Value);
-            if Info.Compact then
-                DisplayLabel.Text = string.format("%s: %s%s%s", Slider.Text, Slider.Prefix, FormattedValue, Slider.Suffix);
+            local CustomDisplayText = nil;
+            if Info.FormatDisplayValue then
+                CustomDisplayText = Info.FormatDisplayValue(Slider, Slider.Value);
+            end;
 
-            elseif Info.HideMax then
-                DisplayLabel.Text = string.format("%s%s%s", Slider.Prefix, FormattedValue, Slider.Suffix);
-
+            if CustomDisplayText then
+                DisplayLabel.Text = tostring(CustomDisplayText);
             else
-                DisplayLabel.Text = string.format("%s%s%s/%s%s%s", 
-                    Slider.Prefix, FormattedValue, Slider.Suffix,
-                    Slider.Prefix, tostring(Slider.Max), Slider.Suffix);
+                local FormattedValue = (Slider.Value == 0 or Slider.Value == -0) and "0" or tostring(Slider.Value);
+                if Info.Compact then
+                    DisplayLabel.Text = string.format("%s: %s%s%s", Slider.Text, Slider.Prefix, FormattedValue, Slider.Suffix);
+
+                elseif Info.HideMax then
+                    DisplayLabel.Text = string.format("%s%s%s", Slider.Prefix, FormattedValue, Slider.Suffix);
+
+                else
+                    DisplayLabel.Text = string.format("%s%s%s/%s%s%s", 
+                        Slider.Prefix, FormattedValue, Slider.Suffix,
+                        Slider.Prefix, tostring(Slider.Max), Slider.Suffix);
+                end;
             end;
 
             local X = Library:MapValue(Slider.Value, Slider.Min, Slider.Max, 0, 1);

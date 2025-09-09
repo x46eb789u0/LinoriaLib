@@ -1,3 +1,8 @@
+### 09.09.2025
+```diff
++ Added FormatDisplayValue to Sliders
+```
+
 ### 04.08.2025
 ```diff
 + Fixed UpdateWarningBox resizing to invalid Y size
