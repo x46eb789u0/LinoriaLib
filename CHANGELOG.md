@@ -1,3 +1,9 @@
+### 14.09.2025
+```diff
++ Added Press mode to KeyPicker
++ KeyPicker no longer fires after changing the keybind
+```
+
 ### 09.09.2025
 ```diff
 + Added FormatDisplayValue to Sliders
