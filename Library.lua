@@ -125,6 +125,7 @@ local Library = {
     -- frames --
     OpenedFrames = {};
     DependencyBoxes = {};
+    DependencyGroupboxes = {};
 
     -- signals --
     UnloadSignals = {};
@@ -765,6 +766,12 @@ end;
 
 function Library:UpdateDependencyBoxes()
     for _, Depbox in next, Library.DependencyBoxes do
+        Depbox:Update();
+    end;
+end;
+
+function Library:UpdateDependencyGroupboxes()
+    for _, Depbox in next, Library.DependencyGroupboxes do
         Depbox:Update();
     end;
 end;
@@ -2443,6 +2450,7 @@ do
                             Dropdown:Display();
                             
                             Library:UpdateDependencyBoxes();
+                            Library:UpdateDependencyGroupboxes();
                             Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
                             Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
 
@@ -3521,6 +3529,7 @@ do
             end;
 
             Library:UpdateDependencyBoxes();
+            Library:UpdateDependencyGroupboxes();
         end;
 
         function Toggle:SetVisible(Visibility)
@@ -3582,6 +3591,7 @@ do
         Toggles[Idx] = Toggle;
 
         Library:UpdateDependencyBoxes();
+        Library:UpdateDependencyGroupboxes();
 
         return Toggle;
     end;
@@ -4334,6 +4344,7 @@ do
                             Dropdown:Display();
                             
                             Library:UpdateDependencyBoxes();
+                            Library:UpdateDependencyGroupboxes();
                             Library:SafeCallback(Dropdown.Callback, Dropdown.Value);
                             Library:SafeCallback(Dropdown.Changed, Dropdown.Value);
 
@@ -4865,6 +4876,7 @@ do
         Options[Idx] = Viewport
 
         Library:UpdateDependencyBoxes();
+        Library:UpdateDependencyGroupboxes();
 
         return Viewport
     end;
@@ -5037,6 +5049,7 @@ do
         Options[Idx] = Image
 
         Library:UpdateDependencyBoxes();
+        Library:UpdateDependencyGroupboxes();
 
         return Image
     end;
@@ -5117,7 +5130,118 @@ do
 
         return Depbox;
     end;
-    BaseGroupboxFuncs.AddDependencyGroupbox = BaseGroupboxFuncs.AddDependencyBox;
+
+    function BaseGroupboxFuncs:AddDependencyGroupbox()
+        local ParentGroupbox = self;
+        local Tab = ParentGroupbox.Tab;
+
+        local DepGroupbox = {
+            Dependencies = {};
+        }
+
+        local BoxOuter = Library:Create('Frame', {
+            BackgroundColor3 = Library.BackgroundColor;
+            BorderColor3 = Library.OutlineColor;
+            BorderMode = Enum.BorderMode.Inset;
+            Size = UDim2.new(1, 0, 0, 507 + 2);
+            ZIndex = 2;
+            Parent = ParentGroupbox.Side == 1 and Tab.LeftSideFrame or Tab.RightSideFrame;
+        });
+
+        Library:AddToRegistry(BoxOuter, {
+            BackgroundColor3 = 'BackgroundColor';
+            BorderColor3 = 'OutlineColor';
+        });
+
+        local BoxInner = Library:Create('Frame', {
+            BackgroundColor3 = Library.BackgroundColor;
+            BorderColor3 = Color3.new(0, 0, 0);
+            -- BorderMode = Enum.BorderMode.Inset;
+            Size = UDim2.new(1, -2, 1, -2);
+            Position = UDim2.new(0, 1, 0, 1);
+            ZIndex = 4;
+            Parent = BoxOuter;
+        });
+
+        Library:AddToRegistry(BoxInner, {
+            BackgroundColor3 = 'BackgroundColor';
+        });
+
+        local Highlight = Library:Create('Frame', {
+            BackgroundColor3 = Library.AccentColor;
+            BorderSizePixel = 0;
+            Size = UDim2.new(1, 0, 0, 2);
+            ZIndex = 5;
+            Parent = BoxInner;
+        });
+
+        Library:AddToRegistry(Highlight, {
+            BackgroundColor3 = 'AccentColor';
+        });
+
+        local Container = Library:Create('Frame', {
+            BackgroundTransparency = 1;
+            Position = UDim2.new(0, 4, 0, 10);
+            Size = UDim2.new(1, -4, 1, -10);
+            ZIndex = 1;
+            Parent = BoxInner;
+        });
+
+        Library:Create('UIListLayout', {
+            FillDirection = Enum.FillDirection.Vertical;
+            SortOrder = Enum.SortOrder.LayoutOrder;
+            Parent = Container;
+        });
+
+        function DepGroupbox:Resize()
+            local Size = 0;
+
+            for _, Element in next, DepGroupbox.Container:GetChildren() do
+                if (not Element:IsA('UIListLayout')) and Element.Visible then
+                    Size = Size + Element.Size.Y.Offset;
+                end;
+            end;
+
+            BoxOuter.Size = UDim2.new(1, 0, 0, (10 * DPIScale + Size) + 2 + 2);
+        end
+
+        function DepGroupbox:Update()
+            for _, Dependency in next, DepGroupbox.Dependencies do
+                local Elem = Dependency[1];
+                local Value = Dependency[2];
+
+                if if Elem.Multi then not table.find(Elem:GetActiveValues(), Value) else Elem.Value ~= Value then
+                    BoxOuter.Visible = false;
+                    DepGroupbox:Resize();
+                    return;
+                end;
+            end;
+
+            BoxOuter.Visible = true;
+            DepGroupbox:Resize();
+        end
+
+        function DepGroupbox:SetupDependencies(Dependencies)
+            for _, Dependency in pairs(Dependencies) do
+                assert(typeof(Dependency) == "table", "Dependency should be a table.")
+                assert(Dependency[1] ~= nil, "Dependency is missing element.")
+                assert(Dependency[2] ~= nil, "Dependency is missing expected value.")
+            end
+
+            DepGroupbox.Dependencies = Dependencies
+            DepGroupbox:Update()
+        end
+
+        DepGroupbox.Container = Container;
+        setmetatable(DepGroupbox, BaseGroupbox);
+
+        DepGroupbox:Resize();
+
+        table.insert(Tab.DependencyGroupboxes, DepGroupbox)
+        table.insert(Library.DependencyGroupboxes, DepGroupbox)
+
+        return DepGroupbox
+    end;
 
     BaseGroupbox.__index = BaseGroupboxFuncs;
     BaseGroupbox.__namecall = function(Table, Key, ...)
@@ -5655,6 +5779,7 @@ function Library:CreateWindow(...)
         local Tab = {
             Groupboxes = {};
             Tabboxes = {};
+            DependencyGroupboxes = {};
             WarningBox = {
                 Bottom = false,
                 IsNormal = false,
@@ -5823,6 +5948,9 @@ function Library:CreateWindow(...)
             ZIndex = 2;
             Parent = TabFrame;
         });
+
+        Tab.LeftSideFrame = LeftSide;
+        Tab.RightSideFrame = RightSide;
 
         Library:Create('UIListLayout', {
             Padding = UDim.new(0, 8);
@@ -5995,7 +6123,10 @@ function Library:CreateWindow(...)
         end;
 
         function Tab:AddGroupbox(Info)
-            local Groupbox = {};
+            local Groupbox = {
+                Side = Info.Side;
+                Tab = Tab;
+            };
 
             local BoxOuter = Library:Create('Frame', {
                 BackgroundColor3 = Library.BackgroundColor;
