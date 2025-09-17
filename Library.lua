@@ -5117,6 +5117,7 @@ do
 
         return Depbox;
     end;
+    BaseGroupboxFuncs.AddDependencyGroupbox = BaseGroupboxFuncs.AddDependencyBox;
 
     BaseGroupbox.__index = BaseGroupboxFuncs;
     BaseGroupbox.__namecall = function(Table, Key, ...)
