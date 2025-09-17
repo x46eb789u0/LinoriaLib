@@ -1,3 +1,8 @@
+### 17.09.2025
+```diff
++ Added AddDependencyGroupbox (check Obsidian documentation on how to use it, its the same syntax)
+```
+
 ### 14.09.2025
 ```diff
 + Added Press mode to KeyPicker
