@@ -1,28 +1,28 @@
 local cloneref = (cloneref or clonereference or function(instance: any) return instance end)
-local InputService: UserInputService = cloneref(game:GetService('UserInputService'));
-local TextService: TextService = cloneref(game:GetService('TextService'));
-local CoreGui: CoreGui = cloneref(game:GetService('CoreGui'));
-local Teams: Teams = cloneref(game:GetService('Teams'));
-local Players: Players = cloneref(game:GetService('Players'));
-local RunService: RunService = cloneref(game:GetService('RunService'));
-local TweenService: TweenService = cloneref(game:GetService('TweenService'));
+local InputService: UserInputService = cloneref(game:GetService("UserInputService"));
+local TextService: TextService = cloneref(game:GetService("TextService"));
+local CoreGui: CoreGui = cloneref(game:GetService("CoreGui"));
+local Teams: Teams = cloneref(game:GetService("Teams"));
+local Players: Players = cloneref(game:GetService("Players"));
+local RunService: RunService = cloneref(game:GetService("RunService"));
+local TweenService: TweenService = cloneref(game:GetService("TweenService"));
 
-local RenderStepped = RunService.RenderStepped;
-local LocalPlayer = Players.LocalPlayer;
-local Mouse = LocalPlayer:GetMouse();
+local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait();
+local Mouse = cloneref(LocalPlayer:GetMouse());
 
-local getgenv = getgenv or (function() return shared end);
-local ProtectGui = protectgui or (function() end);
-local GetHUI = gethui or (function() return CoreGui end);
+local setclipboard = setclipboard or nil
+local getgenv = getgenv or function() return shared end
+local ProtectGui = protectgui or (syn and syn.protect_gui) or function() end
+local GetHUI = gethui or function() return CoreGui end
+
+local DrawingLib = if typeof(Drawing) == "table" then Drawing else { drawing_replaced = true };
+local IsBadDrawingLib = false;
 
 local assert = function(condition, errorMessage) 
     if (not condition) then
         error(if errorMessage then errorMessage else "assert failed", 3);
     end;
 end;
-
-local DrawingLib = typeof(Drawing) == "table" and Drawing or { drawing_replaced = true };
-local IsBadDrawingLib = false;
 
 local function SafeParentUI(Instance: Instance, Parent: Instance | () -> Instance)
     local success, _error = pcall(function()
@@ -74,31 +74,13 @@ ModalElement.Text = ""
 ModalElement.ZIndex = -999
 ModalElement.Parent = ModalScreenGui
 
---[[
-    You can access Toggles & Options through (I'm planning to remove **a** option):
-        a) getgenv().Toggles, getgenv().Options (IY will break this getgenv)
-        b) getgenv().Linoria.Toggles, getgenv().Linoria.Options
-        c) Library.Toggles, Library.Options
---]]
+local LibraryMainOuterFrame = nil;
 
 local Toggles = {};
 local Options = {};
 local Labels = {};
 local Buttons = {};
 
-getgenv().Linoria = {
-    Toggles = Toggles;
-    Options = Options;
-    Labels = Labels;
-    Buttons = Buttons;
-}
-
-getgenv().Toggles = Toggles; -- if you load infinite yeild after you executed any script with LinoriaLib it will just break the whole UI lib :/ (thats why I added getgenv().Linoria)
-getgenv().Options = Options;
-getgenv().Labels = Labels;
-getgenv().Buttons = Buttons;
-
-local LibraryMainOuterFrame = nil;
 local Library = {
     Registry = {};
     RegistryMap = {};
@@ -183,7 +165,7 @@ local RainbowStep = 0
 local Hue = 0
 local DPIScale = 1
 
-table.insert(Library.Signals, RenderStepped:Connect(function(Delta)
+table.insert(Library.Signals, RunService.RenderStepped:Connect(function(Delta)
     RainbowStep = RainbowStep + Delta
 
     if RainbowStep >= (1 / 60) then
@@ -291,30 +273,6 @@ function Library:SafeCallback(Func, ...)
     return table.unpack(Result, 2, Result.n);
 end;
 
---[[function Library:SafeCallback(Func, ...)
-    if not (Func and typeof(Func) == "function") then
-        return
-    end
-
-    local run = function(func, ...)
-        local Success, Response = pcall(func, ...)
-        if Success then
-            return Response
-        end
-    
-        local Traceback = debug.traceback():gsub("\n", " ")
-        local _, i = Traceback:find(":%d+ ")
-        Traceback = Traceback:sub(i + 1):gsub(" :", ":")
-    
-        task.defer(error, Response .. " - " .. Traceback)
-        if Library.NotifyOnError then
-            Library:Notify(Response)
-        end
-    end;
-
-    task.spawn(run, Func, ...);
-end;--]]
-
 function Library:AttemptSave()
     if (not Library.SaveManager) then return end;
     Library.SaveManager:Save();
@@ -402,7 +360,7 @@ function Library:MakeDraggable(Instance, Cutoff, IsMainWindow)
                         Mouse.Y - ObjPos.Y + (Instance.Size.Y.Offset * Instance.AnchorPoint.Y)
                     );
 
-                    RenderStepped:Wait();
+                    RunService.RenderStepped:Wait();
                 end;
             end;
         end);
@@ -481,7 +439,7 @@ function Library:MakeDraggableUsingParent(Instance, Parent, Cutoff, IsMainWindow
                         Mouse.Y - ObjPos.Y + (Parent.Size.Y.Offset * Parent.AnchorPoint.Y)
                     );
 
-                    RenderStepped:Wait();
+                    RunService.RenderStepped:Wait();
                 end;
             end;
         end);
@@ -1408,7 +1366,7 @@ do
                     ColorPicker.Vib = 1 - ((MouseY - MinY) / (MaxY - MinY));
                     ColorPicker:Display();
 
-                    RenderStepped:Wait();
+                    RunService.RenderStepped:Wait();
                 end;
 
                 Library:AttemptSave();
@@ -1425,7 +1383,7 @@ do
                     ColorPicker.Hue = ((MouseY - MinY) / (MaxY - MinY));
                     ColorPicker:Display();
 
-                    RenderStepped:Wait();
+                    RunService.RenderStepped:Wait();
                 end;
 
                 Library:AttemptSave();
@@ -1462,7 +1420,7 @@ do
 
                         ColorPicker:Display();
 
-                        RenderStepped:Wait();
+                        RunService.RenderStepped:Wait();
                     end;
 
                     Library:AttemptSave();
@@ -1901,7 +1859,7 @@ do
             end;
 
             PickOuter.Size = UDim2.new(0, 999999, 0, 18);
-            RenderStepped:Wait();
+            RunService.RenderStepped:Wait();
             PickOuter.Size = UDim2.new(0, math.max(28, DisplayLabel.TextBounds.X + 8), 0, 18);
 
             KeyPicker:Update();
@@ -3917,7 +3875,7 @@ do
                         Library:SafeCallback(Slider.Changed, Slider.Value);
                     end;
 
-                    RenderStepped:Wait();
+                    RunService.RenderStepped:Wait();
                 end;
 
                 if Library.IsMobile then
@@ -6748,5 +6706,6 @@ Library:GiveSignal(Players.PlayerRemoving:Connect(OnPlayerChange));
 Library:GiveSignal(Teams.ChildAdded:Connect(OnTeamChange));
 Library:GiveSignal(Teams.ChildRemoved:Connect(OnTeamChange));
 
+getgenv().Linoria = Library;
 if getgenv().skip_getgenv_linoria ~= true then getgenv().Library = Library end
 return Library

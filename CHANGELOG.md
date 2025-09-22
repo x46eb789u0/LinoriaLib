@@ -1,3 +1,9 @@
+### 22.09.2025
+```diff
++ Changed getgenv().Linoria to reference the Library table
++ Removed Toggles, Options, Labels, Buttons from getgenv
+```
+
 ### 17.09.2025
 ```diff
 + Added AddDependencyGroupbox (check Obsidian documentation on how to use it, its the same syntax)
