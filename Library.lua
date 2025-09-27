@@ -61,20 +61,14 @@ ScreenGui.DisplayOrder = 999;
 ScreenGui.ResetOnSpawn = false;
 ParentUI(ScreenGui);
 
-local ModalScreenGui = Instance.new("ScreenGui");
-ModalScreenGui.DisplayOrder = -1;
-ModalScreenGui.ResetOnSpawn = false;
-ModalScreenGui.IgnoreGuiInset = true;
-ModalScreenGui.Enabled = false;
-ParentUI(ModalScreenGui, true);
-
 local ModalElement = Instance.new("TextButton");
 ModalElement.BackgroundTransparency = 1;
-ModalElement.Modal = true;
-ModalElement.Size = UDim2.fromScale(1, 1);
+ModalElement.Modal = false;
+ModalElement.Size = UDim2.fromScale(0, 0);
 ModalElement.AnchorPoint = Vector2.zero;
 ModalElement.Text = "";
-ModalElement.Parent = ModalScreenGui;
+ModalElement.ZIndex = -999;
+ModalElement.Parent = ScreenGui;
 
 local LibraryMainOuterFrame = nil;
 
@@ -828,7 +822,6 @@ function Library:Unload()
     end
 
     ScreenGui:Destroy()
-    ModalScreenGui:Destroy()
     Library.Unloaded = true
     getgenv().Linoria = nil
 end
@@ -6416,7 +6409,7 @@ function Library:CreateWindow(...)
         Toggled = (not Toggled);
 
         Library.Toggled = Toggled;
-        ModalScreenGui.Enabled = Toggled;
+        ModalElement.Modal = Toggled;
 
         if Toggled then
             -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
