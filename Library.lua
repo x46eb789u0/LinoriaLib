@@ -5568,6 +5568,10 @@ function Library:CreateWindow(...)
         end
     end
 
+    if typeof(Config.UnlockMouseWhileOpen) ~= "boolean" then
+        Config.UnlockMouseWhileOpen = true
+    end
+
     if Config.TabPadding <= 0 then
         Config.TabPadding = 1
     end
@@ -6409,7 +6413,9 @@ function Library:CreateWindow(...)
         Toggled = (not Toggled);
 
         Library.Toggled = Toggled;
-        ModalElement.Modal = Toggled;
+        if Config.UnlockMouseWhileOpen then
+            ModalElement.Modal = Library.Toggled;
+        end
 
         if Toggled then
             -- A bit scuffed, but if we're going from not toggled -> toggled we want to show the frame immediately so that the fade is visible.
